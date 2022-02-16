@@ -62,4 +62,5 @@ dependencies {
 	testRuntimeOnly("com.sun.xml.bind:jaxb-core")
 	testRuntimeOnly("com.sun.xml.bind:jaxb-impl")
 	testRuntimeOnly("com.sun.activation:jakarta.activation")
+	testImplementation("org.apache.tomcat.embed:tomcat-embed-core")
 }
