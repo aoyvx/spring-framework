@@ -1,7 +1,8 @@
-package com.xay.app;
+package com.xay.xmlapp;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,13 +15,7 @@ import java.io.File;
 /**
  * @author v_vyqyxiong
  */
-@RestController
-public class TomcatTest {
-
-	@GetMapping("/ping")
-	public String ping() {
-		return "pong";
-	}
+public class XmlApplicationContextTest {
 
 	public static void main(String[] args) {
 		Tomcat tomcat = new Tomcat();
@@ -28,13 +23,14 @@ public class TomcatTest {
 		conn.setPort(80);
 		tomcat.setConnector(conn);
 
-		DispatcherServlet dispatcherServlet = new DispatcherServlet();
-		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
-		applicationContext.register(TomcatTest.class);
-		applicationContext.refresh();
-		dispatcherServlet.setApplicationContext(applicationContext);
 		Context ctx = tomcat.addContext("", new File(".").getAbsolutePath());
-		Tomcat.addServlet(ctx, "mvc", dispatcherServlet).addMapping("/*");
+		ctx.addApplicationListener("org.springframework.web.context.ContextLoaderListener");
+		ctx.addParameter("contextConfigLocation","classpath:com/xay/xmlapp/spring-application.xml");
+
+		Wrapper mvc = tomcat.addServlet("", "mvc", "org.springframework.web.servlet.DispatcherServlet");
+		mvc.addMapping("/");
+		mvc.addInitParameter("contextConfigLocation","classpath:com/xay/xmlapp/spring-mvc.xml");
+
 		try {
 			tomcat.start();
 			tomcat.getServer().await();
